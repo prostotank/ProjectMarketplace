@@ -1,4 +1,1 @@
-index.html
-style.css
-script.js
-images/
+site/index.html
