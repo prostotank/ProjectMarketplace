@@ -1,1 +1,4 @@
-проект для 9 класса тут ты не найдёшь ничего удивительного
+index.html
+style.css
+script.js
+images/
