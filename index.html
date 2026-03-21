@@ -1,1 +1,184 @@
-index.html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>TechMarket</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app">
+
+  <!-- МОДАЛКА АВТОРИЗАЦИИ (только вход, без регистрации) -->
+  <div class="overlay" v-if="showAuth" @click.self="showAuth = false">
+    <div class="modal">
+      <button class="modal-close" @click="showAuth = false">✕</button>
+      <h2>Вход</h2>
+      <div class="field">
+        <label>login</label>
+        <input type="email" v-model="form.email" placeholder="login" />
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" v-model="form.password" placeholder="••••••••" />
+      </div>
+      <p class="error" v-if="authError">{{ authError }}</p>
+      <button class="btn-accent full" @click="submitAuth">Войти</button>
+    </div>
+  </div>
+
+  <!-- ШАПКА -->
+  <header>
+    <div class="inner">
+      <div class="logo">⚡ TechMarket</div>
+      <div class="hright">
+        <div v-if="user" class="user">
+          👤 {{ user.name }}
+          <button @click="user = null">Выйти</button>
+        </div>
+        <button v-else class="btn-outline" @click="showAuth = true">Войти</button>
+
+        <!-- Корзина с дропдауном -->
+        <div class="cart-wrap">
+          <button class="btn-outline" @click="showCart = !showCart">
+            Корзина
+            <span class="badge" v-if="cart.length">{{ cart.length }}</span>
+          </button>
+          <div class="cart-drop" v-if="showCart">
+            <p class="drop-title">Корзина</p>
+            <p class="empty" v-if="!cart.length">Корзина пуста</p>
+            <div v-else>
+              <div class="ci" v-for="(item, i) in cart" :key="i">
+                <div>
+                  <p class="ci-name">{{ item.name }}</p>
+                  <p class="ci-price">{{ item.price.toLocaleString() }} ₽</p>
+                </div>
+                <button class="ci-del" @click="cart.splice(i, 1)">✕</button>
+              </div>
+              <div class="total">Итого: <strong>{{ total.toLocaleString() }} ₽</strong></div>
+              <button class="btn-accent full" style="margin-top:8px">Оформить заказ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- СТРАНИЦА ТОВАРА -->
+  <div class="product-page" v-if="current">
+    <div class="inner">
+      <p class="crumb">
+        <span @click="current = null">Каталог</span> › {{ current.name }}
+      </p>
+      <div class="pp-body">
+        <!-- Фото -->
+        <div class="pp-gallery">
+          <div class="pp-img">
+            <img :src="current.image" :alt="current.name" />
+          </div>
+        </div>
+        <!-- Инфо -->
+        <div class="pp-info">
+          <span class="cat-label">{{ current.category }}</span>
+          <h1>{{ current.name }}</h1>
+          <div class="price-row">
+            <span class="big-price">{{ current.price.toLocaleString() }} ₽</span>
+            <span class="old-price" v-if="current.oldPrice">{{ current.oldPrice.toLocaleString() }} ₽</span>
+            <span class="disc" v-if="current.discount">-{{ current.discount }}%</span>
+          </div>
+          <button class="btn-accent" @click="addCart(current)">+ В корзину</button>
+          <div class="specs">
+            <div class="spec" v-for="s in current.specs" :key="s.label">
+              <span class="sl">{{ s.label }}</span>
+              <span class="sv">{{ s.value }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Описание -->
+      <div class="desc-block">
+        <h3>Описание</h3>
+        <p>{{ current.description }}</p>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+<div v-else>
+    <section class="hero">
+      <div class="inner">
+        <p class="label">МАРКЕТПЛЕЙС КОМПЛЕКТУЮЩИХ</p>
+        <h1>Собери<br /><span>идеальный ПК</span></h1>
+        <p class="sub">Видеокарты, процессоры, память — всё для мощной сборки</p>
+</div>
+    </section>
+
+    <div class="inner catalog-layout">
+<aside>
+        <p class="s-title">КАТЕГОРИИ</p>
+        <ul>
+          <li v-for="c in cats" :key="c.id"
+            :class="{ on: selCat === c.id }"
+            @click="selCat = c.id">
+            {{ c.icon }} {{ c.name }}
+            <span>{{ c.count }}</span>
+          </li>
+        </ul>
+</aside>
+
+
+
+
+
+      <main>
+        <div class="grid">
+          <div class="card" v-for="p in filtered" :key="p.id" @click="openProduct(p)">
+            <div class="card-img-wrap">
+              <img :src="p.image" :alt="p.name" class="card-img" />
+            </div>
+            <div class="card-body">
+              <p class="card-cat">{{ p.category }}</p>
+              <h3>{{ p.name }}</h3>
+              <div class="card-foot">
+                <div>
+                  <p class="old" v-if="p.oldPrice">{{ p.oldPrice.toLocaleString() }} ₽</p>
+                  <p class="price">{{ p.price.toLocaleString() }} ₽</p>
+                </div>
+                <button class="add-btn" @click.stop="addCart(p)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+
+
+
+  <footer v-if="!current">
+    <div class="inner">
+      <div class="ft-logo">⚡️ TechMarket</div>
+      <p class="ft-desc">Маркетплейс комплектующих для сборки идеального ПК</p>
+      <div class="ft-divider"></div>
+      <div class="ft-team-title">Команда разработчиков</div>
+      <div class="ft-team">
+        <div class="dev" v-for="dev in team" :key="dev.name">
+          <div class="dev-photo">
+            <img :src="dev.photo" :alt="dev.name" />
+          </div>
+          <p class="dev-name">{{ dev.name }}</p>
+          <p class="dev-role">{{ dev.role }}</p>
+        </div>
+      </div>
+      <div class="ft-divider"></div>
+      <p class="ft-copy">© 2026 TechMarket. Все права защищены черепашкой.</p>
+    </div>
+  </footer>
+
+</div>
+<script src="script.js"></script>
+</body>
+          </html>
