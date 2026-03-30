@@ -9,14 +9,38 @@
 <body>
 <div id="app">
 
-  <!-- МОДАЛКА АВТОРИЗАЦИИ (только вход, без регистрации) -->
+  <!-- МОДАЛКА РЕГИСТРАЦИИ -->
+  <div class="overlay" v-if="showRegister" @click.self="showRegister = false">
+    <div class="modal">
+      <button class="modal-close" @click="showRegister = false">✕</button>
+      <h2>Регистрация</h2>
+      <div class="field">
+        <label>Имя пользователя</label>
+        <input type="text" v-model="regForm.name" placeholder="Ваше имя" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" v-model="regForm.email" placeholder="email@example.com" />
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" v-model="regForm.password" placeholder="Минимум 6 символов" />
+      </div>
+      <p class="error" v-if="regError">{{ regError }}</p>
+      <p class="success" v-if="regSuccess">{{ regSuccess }}</p>
+      <button class="btn-accent full" @click="submitRegister">Зарегистрироваться</button>
+      <p class="switch-link">Уже есть аккаунт? <span @click="showRegister=false; showAuth=true">Войти</span></p>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА АВТОРИЗАЦИИ -->
   <div class="overlay" v-if="showAuth" @click.self="showAuth = false">
     <div class="modal">
       <button class="modal-close" @click="showAuth = false">✕</button>
       <h2>Вход</h2>
       <div class="field">
-        <label>login</label>
-        <input type="email" v-model="form.email" placeholder="login" />
+        <label>Email</label>
+        <input type="email" v-model="form.email" placeholder="email@example.com" />
       </div>
       <div class="field">
         <label>Пароль</label>
@@ -24,6 +48,30 @@
       </div>
       <p class="error" v-if="authError">{{ authError }}</p>
       <button class="btn-accent full" @click="submitAuth">Войти</button>
+      <p class="switch-link">Нет аккаунта? <span @click="showAuth=false; showRegister=true">Зарегистрироваться</span></p>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА ОТЗЫВА -->
+  <div class="overlay" v-if="showReviewModal" @click.self="showReviewModal = false">
+    <div class="modal">
+      <button class="modal-close" @click="showReviewModal = false">✕</button>
+      <h2>Оставить отзыв</h2>
+      <div class="field">
+        <label>Оценка</label>
+        <div class="stars-input">
+          <span v-for="s in 5" :key="s"
+            class="star-btn"
+            :class="{ active: reviewForm.rating >= s }"
+            @click="reviewForm.rating = s">★</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ваш отзыв</label>
+        <textarea v-model="reviewForm.text" placeholder="Поделитесь впечатлениями о товаре..." rows="4"></textarea>
+      </div>
+      <p class="error" v-if="reviewError">{{ reviewError }}</p>
+      <button class="btn-accent full" @click="submitReview">Опубликовать</button>
     </div>
   </div>
 
@@ -34,9 +82,12 @@
       <div class="hright">
         <div v-if="user" class="user">
           👤 {{ user.name }}
-          <button @click="user = null">Выйти</button>
+          <button @click="logout">Выйти</button>
         </div>
-        <button v-else class="btn-outline" @click="showAuth = true">Войти</button>
+        <template v-else>
+          <button class="btn-outline" @click="showRegister = true">Регистрация</button>
+          <button class="btn-outline" @click="showAuth = true">Войти</button>
+        </template>
 
         <!-- Корзина с дропдауном -->
         <div class="cart-wrap">
@@ -100,23 +151,44 @@
         <h3>Описание</h3>
         <p>{{ current.description }}</p>
       </div>
+
+      <!-- ОТЗЫВЫ -->
+      <div class="reviews-block">
+        <div class="reviews-header">
+          <h3>Отзывы <span class="review-count">({{ currentReviews.length }})</span></h3>
+          <button class="btn-accent review-btn" @click="openReviewModal">✍ Написать отзыв</button>
+        </div>
+
+        <div v-if="currentReviews.length === 0" class="no-reviews">
+          Отзывов пока нет. Будьте первым!
+        </div>
+        <div v-else class="reviews-list">
+          <div class="review-item" v-for="(r, i) in currentReviews" :key="i">
+            <div class="review-top">
+              <span class="review-author">👤 {{ r.author }}</span>
+              <span class="review-stars">
+                <span v-for="s in 5" :key="s" :class="s <= r.rating ? 'star-on' : 'star-off'">★</span>
+              </span>
+              <span class="review-date">{{ r.date }}</span>
+            </div>
+            <p class="review-text">{{ r.text }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-
-  
-
-<div v-else>
+  <div v-else>
     <section class="hero">
       <div class="inner">
         <p class="label">МАРКЕТПЛЕЙС КОМПЛЕКТУЮЩИХ</p>
         <h1>Собери<br /><span>идеальный ПК</span></h1>
-        <p class="sub">Видеокарты, процессоры, память — всё для мощной сборки</p>
-</div>
+        <p class="sub">Видеокарты, процессоры, память, блоки питания, платы, корпуса — всё для мощной сборки</p>
+      </div>
     </section>
 
     <div class="inner catalog-layout">
-<aside>
+      <aside>
         <p class="s-title">КАТЕГОРИИ</p>
         <ul>
           <li v-for="c in cats" :key="c.id"
@@ -126,11 +198,7 @@
             <span>{{ c.count }}</span>
           </li>
         </ul>
-</aside>
-
-
-
-
+      </aside>
 
       <main>
         <div class="grid">
@@ -155,9 +223,6 @@
     </div>
   </div>
 
-
-
-
   <footer v-if="!current">
     <div class="inner">
       <div class="ft-logo">⚡️ TechMarket</div>
@@ -181,4 +246,3 @@
 </div>
 <script src="script.js"></script>
 </body>
-</html>
