@@ -1,5 +1,5 @@
 :root {
-  --bg:#f4f6f9; --card:#f0f4ff; --accent:#0070f3;
+  --bg:#f4f6f9; --card:#ffffff; --accent:#0070f3;
   --text:#1a1a2e; --muted:#6b7280; --border:#e2e8f0; --r:10px;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -7,7 +7,7 @@ body { background:var(--bg); color:var(--text); font:14px 'Segoe UI',sans-serif;
 a { color:inherit; text-decoration:none; }
 button { cursor:pointer; border:none; background:none; font:inherit; }
 ul { list-style:none; }
-input { font:inherit; }
+input,textarea { font:inherit; }
 .inner { max-width:1200px; margin:0 auto; padding:0 24px; }
 
 header { background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; box-shadow:0 1px 4px rgba(0,0,0,.06); }
@@ -40,14 +40,23 @@ nav a:hover, nav a.active { color:var(--text); }
 .total strong { color:var(--text); font-size:15px; }
 
 .overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; z-index:300; }
-.modal { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:28px; width:340px; position:relative; box-shadow:0 8px 30px rgba(0,0,0,.12); }
+.modal { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:28px; width:360px; position:relative; box-shadow:0 8px 30px rgba(0,0,0,.12); }
 .modal h2 { font-size:18px; margin-bottom:18px; }
 .modal-close { position:absolute; top:14px; right:14px; color:var(--muted); font-size:15px; }
 .field { margin-bottom:12px; }
 .field label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
-.field input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 12px; color:var(--text); }
-.field input:focus { outline:none; border-color:var(--accent); }
+.field input,.field textarea { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:8px 12px; color:var(--text); resize:vertical; }
+.field input:focus,.field textarea:focus { outline:none; border-color:var(--accent); }
 .error { color:#ef4444; font-size:12px; margin-bottom:8px; }
+.success { color:#22c55e; font-size:12px; margin-bottom:8px; }
+.switch-link { font-size:12px; color:var(--muted); margin-top:12px; text-align:center; }
+.switch-link span { color:var(--accent); cursor:pointer; font-weight:600; }
+.switch-link span:hover { text-decoration:underline; }
+
+.stars-input { display:flex; gap:6px; margin-top:4px; }
+.star-btn { font-size:24px; color:#d1d5db; cursor:pointer; transition:color .15s; }
+.star-btn.active { color:#f59e0b; }
+.star-btn:hover { color:#f59e0b; }
 
 .hero { background:linear-gradient(135deg,#e8f0fe,#f4f6f9); padding:44px 0 36px; }
 .hero .label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:10px; }
@@ -103,6 +112,23 @@ main { flex:1; }
 .desc-block { margin-top:28px; border-top:1px solid var(--border); padding-top:20px; }
 .desc-block h3 { font-size:15px; font-weight:700; margin-bottom:10px; }
 .desc-block p { color:var(--muted); line-height:1.7; }
+
+/* ОТЗЫВЫ */
+.reviews-block { margin-top:32px; border-top:1px solid var(--border); padding-top:24px; }
+.reviews-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.reviews-header h3 { font-size:15px; font-weight:700; }
+.review-count { color:var(--muted); font-weight:400; }
+.review-btn { padding:8px 16px; font-size:13px; }
+.no-reviews { color:var(--muted); text-align:center; padding:30px 0; font-size:14px; }
+.reviews-list { display:flex; flex-direction:column; gap:14px; }
+.review-item { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; }
+.review-top { display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; }
+.review-author { font-weight:700; font-size:13px; }
+.review-stars { font-size:16px; letter-spacing:1px; }
+.star-on { color:#f59e0b; }
+.star-off { color:#d1d5db; }
+.review-date { color:var(--muted); font-size:11px; margin-left:auto; }
+.review-text { color:var(--text); font-size:13px; line-height:1.6; }
 
 footer { background:#fff; border-top:1px solid var(--border); margin-top:40px; padding:36px 0 24px; }
 .ft-logo { font-size:18px; font-weight:800; color:var(--accent); margin-bottom:6px; }
